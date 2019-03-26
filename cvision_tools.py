@@ -71,8 +71,13 @@ def detect_face(image):
     Return:
        face[0]: A box indicating  the location of one face in the image (x, y, w, h)
     """
-    faces = face_cascade.detectMultiScale(images[0], 1.1, 5)
-    return faces[0]
+    faces = face_cascade.detectMultiScale(image, 1.1, 5)
+    #print(faces)
+    if faces != ():
+        return faces[0]
+    else:
+        return 0, 0, image.shape[0], image.shape[1]
+    #return faces[0] if faces != () else image 
 
 
 def crop_face(image):
@@ -124,21 +129,19 @@ def resize_with_pad(image, height, width):
 
     return resized_image
 
+def main():
+    images, labels = read_feret_data()
+    faces = [crop_face(image) for image in images]
+    faces = [resize_with_pad(face, 100, 100) for face in faces]
+    faces = [convert_to_gray(face) for face in faces]
+    #print(images[0])
+    #print(labels[0])
+    for image, face in zip(images, faces):
+        cv2.imshow("image[40]",image)
+        cv2.imshow("img",face)
+        cv2.waitKey(0)
+    #cv2.destroyAllWindows()
 
-images, labels = read_feret_data()
 
-faces = [crop_face(image) for image in images]
-
-faces = [resize_with_pad(face, 100, 100) for face in faces]
-
-faces = [convert_to_gray(face) for face in faces]
-
-#print(images[0])
-#print(labels[0])
-"""
-for image, face in zip(images, faces):
-    cv2.imshow("image[40]",image)
-    cv2.imshow("img",face)
-    cv2.waitKey(0)
-#cv2.destroyAllWindows()
-"""
+def __init__():
+    pass
