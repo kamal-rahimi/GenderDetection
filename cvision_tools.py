@@ -9,6 +9,10 @@ import parse
 
 from sklearn.model_selection import train_test_split
 
+image_height = 100
+image_width = 100
+image_n_channels = 1 
+
 FERET_IMAGE_PATH = "data/colorferet/dvd1/data/smaller/"
 FERET_INFO_PATH = "data/colorferet/dvd1/data/ground_truths/name_value/"
 
@@ -27,11 +31,11 @@ class ColorfretDataset():
         images, labels = read_feret_data()
         images = np.array(images)
         faces = [crop_face(image) for image in images]
-        faces = [resize_with_pad(face, 100, 100) for face in faces]
+        faces = [resize_with_pad(face, image_height, image_width) for face in faces]
         if gray==True:
             faces = [convert_to_gray(face) for face in faces]
             faces = np.array(faces)
-            faces=faces.reshape(-1, 100, 100, 1)
+            faces=faces.reshape(-1, image_height, image_width, image_n_channels)
 
         X_train, X_test, y_train, y_test = train_test_split(faces, labels, test_size=test_size, random_state=42)
         X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=valid_size, random_state=42)
@@ -91,6 +95,18 @@ def read_feret_subject(subject_dir, file_, subject_image_path, subject_info_path
         label["race"] = parsed[3]
 
     return image, label
+
+def read_image(image_path):
+    """ Reads an image from an image path
+    Args:
+        image_path: a string indicating the image path
+    Returns:
+        image: a nummpy array of the image data
+    """ 
+    image = cv2.imread(image_path)
+
+    return image
+
 
 face_cascade = cv2.CascadeClassifier('/home/kamal/.local/lib/python3.6/site-packages/cv2/data/haarcascade_frontalface_default.xml')
 def detect_face(image):
