@@ -14,7 +14,8 @@ image_width = 100
 image_n_channels = 1 
 
 FERET_IMAGE_PATH = "data/colorferet/dvd1/data/smaller/"
-FERET_INFO_PATH = "data/colorferet/dvd1/data/ground_truths/name_value/"
+FERET_INFO_PATH  = "data/colorferet/dvd1/data/ground_truths/name_value/"
+
 
 INFO_FROMAT_STRING = "id={}\ngender={}\nyob={}\nrace={}"
 
@@ -58,7 +59,6 @@ def read_feret_data():
     """ 
     images = []
     labels = []
-    
     for subject_dir in os.listdir(FERET_IMAGE_PATH):
         subject_image_path = os.path.join(FERET_IMAGE_PATH, subject_dir)
         subject_info_path  = os.path.join(FERET_INFO_PATH, subject_dir)
