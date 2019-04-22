@@ -68,7 +68,7 @@ def over_sample(X, y):
     nsamples, nx, ny, nz = X.shape
     d2_X = X.reshape((nsamples,nx*ny*nz))
     d2_X_os, y_os = random_over_sampler.fit_resample(np.array(d2_X), y)
-    X_os = d2_X.reshape(-1, nx, ny, nz)
+    X_os = d2_X_os.reshape(-1, nx, ny, nz)
     #print(sorted(Counter(y_os).items()))
     return X_os, y_os
 
@@ -157,7 +157,8 @@ def main():
     y_train = gender_encoder.transform(y_gender_train)
     y_test  = gender_encoder.transform(y_gender_test)
     
-    X_train, y_train = over_sample(X_train, y_train)
+    #X_train, y_train = over_sample(X_train, y_train)
+    #X_test, y_test = over_sample(X_test, y_test)
 
     train_gender_model(X_train, X_test, y_train, y_test, gender_encoder)
 

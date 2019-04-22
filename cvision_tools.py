@@ -121,7 +121,7 @@ def detect_face(image):
     if faces != ():
         return faces[0]
     else:
-        return 0, 0, image.shape[0], image.shape[1]
+        return (0, 0, image.shape[0], image.shape[1])
     #return faces[0] if faces != () else image 
 
 
@@ -161,12 +161,12 @@ def resize_with_pad(image, height, width):
     top_pad, bottom_pad, left_pad, right_pad = (0, 0, 0, 0)
     if ( h / w < height / width):
        pad = height / width * w - h
-       left_pad = int(pad / 2)
-       right_pad = int(pad / 2)
+       top_pad = int(pad / 2)
+       bottom_pad = int(pad / 2)
     else:
         pad = width / height * h - w
-        top_pad = int(pad / 2)
-        bottom_pad = int(pad / 2)
+        right_pad = int(pad / 2)
+        left_pad = int(pad / 2)
 
     padded_image = cv2.copyMakeBorder(image, top_pad, bottom_pad, left_pad, right_pad, cv2.BORDER_CONSTANT, value=[0 ,0, 0])
 

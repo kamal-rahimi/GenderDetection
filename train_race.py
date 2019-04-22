@@ -18,10 +18,10 @@ image_width = 100
 image_n_channels = 1
 
 n_epochs = 300
-batch_size = 10
+batch_size = 20
 
 initial_learning_rate = 0.001
-decay_steps = 4000
+decay_steps = 2000
 decay_rate = 1/2
 
 RACE_ENCODER_PATH = "./model/race_encoder.pickle"
@@ -70,9 +70,9 @@ def create_race_encoder(y_race):
 def over_sample(X, y):
     random_over_sampler = RandomOverSampler(random_state=42)
     nsamples, nx, ny, nz = X.shape
-    d2_X = X.reshape((nsamples,nx*ny*nz))
+    d2_X = X.reshape((nsamples, nx*ny*nz))
     d2_X_os, y_os = random_over_sampler.fit_resample(np.array(d2_X), y)
-    X_os = d2_X.reshape(-1, nx, ny, nz)
+    X_os = d2_X_os.reshape(-1, nx, ny, nz)
     #print(sorted(Counter(y_os).items()))
     return X_os, y_os
 
@@ -95,7 +95,6 @@ def train_race_model(X_train, X_test, y_train, y_test, race_encoder):
         X = tf.placeholder(tf.float32, shape = [None, image_height, image_width, image_n_channels], name="X")
         #y = tf.placeholder(tf.float32, shape = [None, image_height, image_weight, image_n_channels])
         y = tf.placeholder(tf.int32, shape = [None])
-        loss_weight = tf.placeholder(tf.float32, shape = [None])
         training = tf.placeholder_with_default(False, shape=[], name='training')
 
         conv1 = tf.layers.conv2d(X, filters=8, kernel_size=4,
@@ -104,7 +103,7 @@ def train_race_model(X_train, X_test, y_train, y_test, race_encoder):
 
         pool2 = tf.nn.max_pool(conv1, ksize=[1, 5, 5, 1], strides=[1, 5, 5, 1], padding="SAME")
 
-        pool2_drop = tf.layers.dropout(pool2, 0.1, training=training)
+        pool2_drop = tf.layers.dropout(pool2, 0.05, training=training)
 
         conv3 = tf.layers.conv2d(pool2_drop, filters=32, kernel_size=4,
                                 strides=1, padding='SAME',
@@ -112,16 +111,18 @@ def train_race_model(X_train, X_test, y_train, y_test, race_encoder):
 
         pool4 = tf.nn.max_pool(conv3, ksize=[1, 4, 4, 1], strides=[1, 4, 4, 1], padding="SAME")
 
-        shape = tf.shape(pool4)
-
         pool4_flat = tf.reshape(pool4, shape=[-1, 32 * 5 * 5])
-        pool4_flat_drop = tf.layers.dropout(pool4_flat, 0.5, training=training)
+        pool4_flat_drop = tf.layers.dropout(pool4_flat, 0.05, training=training)
 
         fc1 = tf.layers.dense(pool4_flat_drop, 32, name="fc1")
         bn1 = tf.layers.batch_normalization(fc1, training=training, momentum=0.9)
         bn1_act = tf.nn.relu(bn1)
 
-        logits_race = tf.layers.dense(bn1_act, num_race_outputs, name="logits_race")
+        fc2 = tf.layers.dense(bn1_act, 32, name="fc2")
+        bn2 = tf.layers.batch_normalization(fc2, training=training, momentum=0.9)
+        bn2_act = tf.nn.relu(bn2)
+
+        logits_race = tf.layers.dense(bn2_act, num_race_outputs, name="logits_race")
         Y_proba_race = tf.nn.softmax(logits_race, name="Y_proba_race")
 
         global_step = tf.Variable(0, trainable=False, name="global_step")
@@ -167,8 +168,9 @@ def main():
     
     y_train = race_encoder.transform(y_race_train)
     y_test  = race_encoder.transform(y_race_test)
-    
+
     X_train, y_train = over_sample(X_train, y_train)
+    X_test, y_test = over_sample(X_test, y_test)
     
     train_race_model(X_train, X_test, y_train, y_test, race_encoder)
 
