@@ -131,6 +131,9 @@ def train_gender_model(X_train, X_test, y_train, y_test, gender_encoder):
         init = tf.global_variables_initializer()
         saver = tf.train.Saver()
 
+    writer = tf.summary.FileWriter('./graphs', tf.get_default_graph())
+    accuracy_summary = tf.summary.scalar(name='accuracy_summary', tensor=accuracy_gender)
+
     with tf.Session() as train_gender_sess:
         init.run()
         print("Training for gender identification")
@@ -144,8 +147,10 @@ def train_gender_model(X_train, X_test, y_train, y_test, gender_encoder):
             acc_batch = accuracy_gender.eval(feed_dict={X: X_batch, y: y_batch})
             acc_train = accuracy_gender.eval(feed_dict={X: X_train[1:100], y: y_train[1:100]})
             acc_test = accuracy_gender.eval(feed_dict={X: X_test, y: y_test})
+            
             print(epoch, "Last batch accuracy:", acc_batch, "Train accuracy:", acc_train, "Test accuracy:", acc_test)
-
+            summary = accuracy_summary.eval(feed_dict={X: X_test, y: y_test})
+            writer.add_summary(summary, epoch)
             save_path_gender = saver.save(train_gender_sess, GENDER_PREDICTION_MODEL_PATH)
 
 
