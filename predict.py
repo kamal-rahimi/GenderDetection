@@ -21,8 +21,7 @@ GENDER_PREDICTION_MODEL_PATH = "./model/gender_model"
 RACE_PREDICTION_MODEL_PATH = "./model/race_model"
 
 
-def prepare_image(image_path):
-    image = read_image(image_path)
+def prepare_image(image):
     image = np.array(image)
     face  = crop_face(image)
     face  = resize_with_pad(face, image_height, image_width)
@@ -53,7 +52,6 @@ def indetify_gender(face):
 
         print( predicted_gender )
         print("Confidennce={}".format(prob_gender))
-        #print( logits_gender.eval(feed_dict={X: face}) )
 
     return predicted_gender, prob_gender
 
@@ -78,16 +76,17 @@ def indetify_race(face):
         print("Confidennce={}".format(prob_race))
     
     return predicted_race, prob_race
-        #print( logits_gender.eval(feed_dict={X: face}) )
 
-def display_image(image, predicted_gender, prob_gender):
+
+def display_image(image, predicted_gender, prob_gender, wait_time=0):
     image = resize_with_pad(image, 600, 600)
     x, y, w, h = detect_face(image)
     cv2.rectangle(image, (x,y), (x+w,y+h), (255,0,0), 2)
-    cv2.putText(image, "{}".format(predicted_gender[0]), (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
-    cv2.putText(image, "Prob: {:.2f}".format(prob_gender), (10, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
+    if x != 0 and y != 0:
+        cv2.putText(image, "{}".format(predicted_gender[0]), (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
+        cv2.putText(image, "Prob: {:.2f}".format(prob_gender), (10, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 0, 0), 2)
     cv2.imshow("Image", image)
-    cv2.waitKey(0)
+    cv2.waitKey(wait_time)
 
 def main():
 
@@ -95,10 +94,12 @@ def main():
     ap.add_argument("-p", "--path", type=str, default="./data/test/obama.jpg", help="Specify the path to the input image")
     args = vars(ap.parse_args())
     image_path = args["path"]
-
-    image, face = prepare_image(image_path)
+    
+    image = read_image(image_path)
+    image, face = prepare_image(image)
     predicted_gender, prob_gender = indetify_gender(face)
     #predicted_race, prob_race = indetify_race(face)
+  
     display_image(image, predicted_gender, prob_gender)
 
 
