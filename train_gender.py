@@ -5,7 +5,8 @@ to identify gender of the person in an input image.
 
 import tensorflow as tf
 
-from cvision_tools import ColorfretDataset, read_feret_data, detect_face, crop_face, convert_to_gray, resize_with_pad
+from cvision_tools import detect_face, crop_face, convert_to_gray, resize_with_pad
+from ColorfretDataset import ColorfretDataset
 
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
