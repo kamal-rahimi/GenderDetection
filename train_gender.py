@@ -26,7 +26,7 @@ decay_steps = 2000
 decay_rate = 1/2
 
 GENDER_ENCODER_PATH = "./model/gender_encoder.pickle"
-GENDER_PREDICTION_MODEL_PATH = "./model/gender_model"
+GENDER_PREDICTION_MODEL_PATH = "./model/gender_model1"
 
 
 def prepare_data():
@@ -94,7 +94,7 @@ def train_gender_model(X_train, X_test, y_train, y_test, gender_encoder):
 
         conv1 = tf.layers.conv2d(X, filters=8, kernel_size=4,
                                 strides=1, padding='SAME',
-                                activation=tf.nn.relu, name="conv1")
+                                activation=tf.nn.elu, name="conv1")
 
         pool2 = tf.nn.max_pool(conv1, ksize=[1, 5, 5, 1], strides=[1, 5, 5, 1], padding="SAME")
 
@@ -102,7 +102,7 @@ def train_gender_model(X_train, X_test, y_train, y_test, gender_encoder):
 
         conv3 = tf.layers.conv2d(pool2_drop, filters=32, kernel_size=4,
                                 strides=1, padding='SAME',
-                                activation=tf.nn.relu, name="pool2")
+                                activation=tf.nn.elu, name="pool2")
 
         pool4 = tf.nn.max_pool(conv3, ksize=[1, 4, 4, 1], strides=[1, 4, 4, 1], padding="SAME")
 

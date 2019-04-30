@@ -7,9 +7,8 @@ from cvision_tools import detect_face, crop_face, convert_to_gray, resize_with_p
 
 from sklearn.model_selection import train_test_split
 
-image_height = 100
-image_width = 100
-image_n_channels = 1 
+
+image_n_channels = 1
 
 FERET_IMAGE_PATH = "data/colorferet/dvd1/data/smaller/"
 FERET_INFO_PATH  = "data/colorferet/dvd1/data/ground_truths/name_value/"
@@ -27,8 +26,8 @@ class ColorfretDataset():
         self.y_train = None
         self.y_valid = None
         self.y_test = None
-    
-    def read(self, test_size=0.2, valid_size=0, gray=True):
+
+    def read(self, image_height=100, image_width=100, test_size=0.2, valid_size=0, gray=True):
         images, labels = self.read_feret_data()
         images = np.array(images)
         faces = [crop_face(image) for image in images]
@@ -56,15 +55,15 @@ class ColorfretDataset():
         Returns:
             images: a python array of the images data
             labels: a python array of the image info
-        """ 
+        """
         images = []
         labels = []
         for subject_dir in os.listdir(FERET_IMAGE_PATH):
             subject_image_path = os.path.join(FERET_IMAGE_PATH, subject_dir)
             subject_info_path  = os.path.join(FERET_INFO_PATH, subject_dir)
-            
+
             for file_ in os.listdir(subject_image_path):
-                if file_.endswith("_fa.ppm"):
+                if file_.endswith("_fa.ppm") or file_.endswith("_fb.ppm"):
                     image, label = self.read_feret_subject(subject_dir, file_, subject_image_path, subject_info_path)
                     images.append(image)
                     labels.append(label)
@@ -78,13 +77,13 @@ class ColorfretDataset():
         Returns:
             image: a nummpy array of the image data
             label: a python dictionary of the image info
-        """ 
+        """
         subject_image_full_path = os.path.abspath(os.path.join(subject_image_path, file_))
         subject_info_full_path1 = os.path.abspath(os.path.join(subject_info_path, "{}.txt".format(subject_dir)))
         subject_info_full_path2 = os.path.abspath(os.path.join(subject_info_path, file_))
-        
+
         image = cv2.imread(subject_image_full_path)
-        
+
         with open(subject_info_full_path1, "r") as f:
             string = f.read()
             parsed = parse.parse(FERET_INFO_FROMAT_STRING, string)
