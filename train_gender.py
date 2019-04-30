@@ -14,8 +14,8 @@ from imblearn.over_sampling import RandomOverSampler
 import pickle
 
 
-image_height = 100
-image_width = 100
+image_height = 64
+image_width = 64
 image_n_channels = 1
 
 n_epochs = 200
@@ -26,7 +26,7 @@ decay_steps = 2000
 decay_rate = 1/2
 
 GENDER_ENCODER_PATH = "./model/gender_encoder.pickle"
-GENDER_PREDICTION_MODEL_PATH = "./model/gender_model1"
+GENDER_PREDICTION_MODEL_PATH = "./model/gender_model"
 
 
 def prepare_data():
@@ -40,11 +40,11 @@ def prepare_data():
         y_gender_test: a numpy array of the test gender lables
     """
     dataset = ColorfretDataset()
-    dataset.read()
-    X_train         = np.array(dataset.X_train).astype('float32')
-    X_test          = np.array(dataset.X_test).astype('float32')
-    X_train        /= 255
-    X_test         /= 255
+    dataset.read(image_height=image_height, image_width=image_width)
+    X_train = np.array(dataset.X_train).astype('float32')
+    X_test  = np.array(dataset.X_test).astype('float32')
+    X_train =  X_train / 128 -1
+    X_test  =  X_test / 128 -1
     
     y_gender_train  = np.array([y['gender'] for y in dataset.y_train])
     y_gender_test   = np.array([y['gender'] for y in dataset.y_test])
@@ -96,7 +96,7 @@ def train_gender_model(X_train, X_test, y_train, y_test, gender_encoder):
                                 strides=1, padding='SAME',
                                 activation=tf.nn.elu, name="conv1")
 
-        pool2 = tf.nn.max_pool(conv1, ksize=[1, 5, 5, 1], strides=[1, 5, 5, 1], padding="SAME")
+        pool2 = tf.nn.max_pool(conv1, ksize=[1, 4, 4, 1], strides=[1, 4, 4, 1], padding="SAME")
 
         pool2_drop = tf.layers.dropout(pool2, 0.1, training=training)
 
@@ -106,7 +106,7 @@ def train_gender_model(X_train, X_test, y_train, y_test, gender_encoder):
 
         pool4 = tf.nn.max_pool(conv3, ksize=[1, 4, 4, 1], strides=[1, 4, 4, 1], padding="SAME")
 
-        pool4_flat = tf.reshape(pool4, shape=[-1, 32 * 5 * 5])
+        pool4_flat = tf.reshape(pool4, shape=[-1, 32 * 4 * 4])
         pool4_flat_drop = tf.layers.dropout(pool4_flat, 0.5, training=training)
 
         fc1 = tf.layers.dense(pool4_flat_drop, 32, activation=tf.nn.relu, name="fc1")
