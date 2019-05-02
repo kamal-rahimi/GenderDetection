@@ -10,8 +10,8 @@ from cvision_tools import read_image, detect_face, crop_face, convert_to_gray, r
 
 import cv2 as cv2
 
-image_height = 100
-image_width = 100
+image_height = 64
+image_width = 64
 image_n_channels = 1
 
 GENDER_ENCODER_PATH = "./model/gender_encoder.pickle"
@@ -29,7 +29,7 @@ def prepare_image(image):
     face  = np.array(face)
     face  = face.reshape(-1, image_height, image_width, image_n_channels)
     face  = face.astype('float32')
-    face /= 255
+    face  = face / 128 - 1
     return image, face
 
 
