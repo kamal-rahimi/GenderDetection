@@ -24,7 +24,7 @@ def read_image(image_path):
     return image
 
 
-face_cascade = cv2.CascadeClassifier('./data/haarcascade_frontalface_default.xml')
+face_cascade = cv2.CascadeClassifier('./cv2/data/haarcascade_frontalface_default.xml')
 def detect_face(image):
     """ Detecs face in an image
     Args:
