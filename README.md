@@ -11,7 +11,7 @@ The train data is 1356 face images from Colorfret dataset. The test data is anot
 
 The model can predict gender in test data with accuracy of 96.7%. :)
 
-The network stucture is depicted below: 
+The network stucture is depicted below. The notaion (X, Y x Y, S) denotes that the layer has X filters and uses Y x Y kernel with stride S.
 
 						      Input image
 					      		   |
