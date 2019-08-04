@@ -1,7 +1,7 @@
 # Gender recognition using Convolutional Neaural Networks (CNN)
 
 ## Model Description
-The gender detection model consists of a face detection/croption step followed by Convolutional Neaural Networks classifier.
+The gender detection model consists of a face detection/croption step followed by Convolutional Neaural Networks classifier. The network stucture is depicted in Figure 1. The notaion (X, Y x Y, S) denotes that the layer has X filters and uses Y x Y kernel with stride S.
 
 The face area in an input image is first detected using HAAR Classifier. The cropped face area is fed to Convolutional Neural Network which is composed of two pairs of convoution-max_poll-dropout layers followed by two fully connected layers. The outputs of the fully connected layers are fed to a softmax layer with two output to classify genders (Male or Female). The activation function of each layer are Exponential Linear Unit (ELU). 
 
@@ -11,7 +11,6 @@ The train data is 1356 face images from Colorfret dataset. The test data is anot
 
 The model can predict gender in test data with accuracy of 96.7%. :)
 
-The network stucture is depicted below. The notaion (X, Y x Y, S) denotes that the layer has X filters and uses Y x Y kernel with stride S.
 
 						      Input image
 					      		   |
@@ -64,13 +63,13 @@ The network stucture is depicted below. The notaion (X, Y x Y, S) denotes that t
 						    Male       Female	
 
 	
-
+					      Fig.1 : Gender Recognition Model
 
 
 ## How to use the model
 
 ### train_gender.py
-Creats a model and trains it based on the Colorfret image dataset to detect gender of a person in an image.
+Creates a model and trains it based on the Colorfret image dataset to detect gender of a person in an image.
 
 Example usage:
 ```
@@ -80,7 +79,7 @@ Note a trained model based on 1356 face images from Colorfret dataset is icluded
 
 
 ### predict.py
-Predict the gender of the person in an input image.
+Predict the gender of a person in an input image.
 
 Example usage:
 ```
@@ -90,7 +89,7 @@ The detected gender and model confidence (probabity of the predicted gender) wil
 
 ### predict_from_camera.py
 
-Opens system camera and continuously detecs the gender of the person visble in the system camera.
+Opens system camera and continuously detects the gender of a person visble in the system camera.
 
 Example usage:
 ```
